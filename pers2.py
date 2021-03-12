@@ -4,32 +4,73 @@ import random
 
 
 class Khristina(Character):
-    def_name = "Khristina"
-    def_st = 500
-    def __init__(self,_armor,_damage,_active,_name = def_name,_stamina = def_st):
-        super().__init__(Khristina.def_name,_damage,Khristina.def_st,_active)
-        self.armor = _armor
+
+    def __init__(self, _armor, _damage, _active, _name , _health):
+        super().__init__(_name,_damage,_health)
+        self._armor = _armor
+        self.counter_active = 1
+        self.flag_active = False
 
     def __str__(self):
-        return f"{self.name},{self.damage},{round(self.stamina,1)},{self.active},{round(self.armor,1)}"
+        return f"{self.name},{self._damage},{round(self._health, 1)},{self.counter_active},{round(self._armor, 1)}"
+
+    def taking_damage(self,damage):
+        if self._armor == 0:
+            self._health -= damage
+        elif self._armor > 0:
+            self._armor -= damage
+            if self._armor < 0:
+                self._health = self._armor + self._health # если после получения урона броню , она стала минусовой то урон прибавляется к стамине
+                self._armor = 0
+            else:
+                self._health -= damage
+        else:
+            self._health -= damage
 
     def attack(self,character):
-        character.stamina = character.stamina - (self.damage + (self.damage * random.uniform(-0.015,0.05)))
-        return f"Нанесен урон по {character.name}"
+        self._damage = (self._damage + (self._damage * random.uniform(-0.015, 0.5)))
+        character.taking_damage(self._damage)
+        if not self.flag_active :
+            self.counter_active -= 1
+            self.check_flag_active()
+
+        # character._health = character._health - (self._damage + (self._damage * random.uniform(-0.015, 0.05)))
+        # return f"Нанесен урон по {character.name}"
 
     def recovery(self):
-        stamina_rec = self.stamina + (Khristina.def_st * 0.6)
-        if stamina_rec > Khristina.def_st :
-            self.stamina = Khristina.def_st
-            return self.stamina
+
+        stamina_rec = self._health + (Khristina.health * 0.6)
+        if stamina_rec > Khristina.health :
+            self._health = Khristina.health
         else:
-            self.stamina = stamina_rec
-            return self.stamina
+            self._health = stamina_rec
+        if not self.flag_active :
+            self.counter_active -= 1
+            self.check_flag_active()
 
     def tortila_mode(self):
-        if self.armor > 0:
-            self.armor = self.armor * 2
-            return self.armor
+        if self._armor > 0:
+            self._armor *= 2
         else:
-            self.armor = 1 * 2
-            return self.armor
+            self._armor = 2
+        self.flag_active = False
+        self.counter_active = 3
+
+
+    def check_flag_active(self):
+        if self.counter_active == 0 :
+            self.flag_active = True
+
+
+    @property
+    def name(self):
+        return self._name
+    @property
+    def damage(self):
+        return self._damage
+    @property
+    def stamina(self):
+        return self._health
+    @property
+    def active(self):
+        return self.counter_active

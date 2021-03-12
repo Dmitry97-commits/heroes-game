@@ -2,38 +2,69 @@ from character_class import Character
 import random
 
 class Dima(Character):
-    _def_name = "Dima"
-    _def_st = 500
 
-    def __init__(self,_damage,_active, _name = _def_name,_stamina=_def_st):
-        super().__init__(Dima._def_name,_damage,Dima._def_st,_active)
+    def __init__(self, _armor, _damage, _active, _name, _health):
+        super().__init__(_name, _damage, _health)
+        self.__k_damage = 1 #кэф атаки
+        self._armor = _armor
+        self.counter_active = 1
+        self.flag_active = False
 
+    def __str__(self):
+        return f"{self._name},{self._damage},{self._health},{self.counter_active}"
 
-    def attack(self,character):
-        damage = (self.damage + (self.damage * random.uniform(-0.05,0.3)))
-        if character.armor != 0:
-            character.armor = character.armor - damage
-            if character.armor < 0:
-                character.stamina = character.armor + character.stamina
-                character.armor = 0
-                return f"Нанесен урон по {character.name}, -{round(damage,1)},броня {round(character.armor,1)} "
+    def taking_damage(self,damage):
+        if self._armor == 0:
+            self._health -= damage
+        elif self._armor > 0:
+            self._armor -= damage
+            if self._armor < 0:
+                self._health = self._armor + self._health # если после получения урона броню , она стала минусовой то урон прибавляется к стамине
+                self._armor = 0
             else:
-                return f"Нанесен урон по {character.name}, -{round(damage,1)} ,броня {round(character.armor,1)} "
-
-
+                self._health -= damage
         else:
-            character.stamina = character.stamina - damage
-            return f"Нанесен урон по {character.name}, -{round(damage),1} ,броня {round(character.armor,1)} "
+            self._health -= damage
 
-    def recovery(self):
-        stamina_rec = self.stamina + (Dima._def_st * 0.1)
-        if stamina_rec > Dima._def_st:
-            self.stamina = Dima._def_st
-            return self.stamina
+
+    def attack(self,character):#переписать
+        self._damage = (self._damage + (self._damage * random.uniform(-0.05, 0.3))) * self.__k_damage
+        character.taking_damage(self._damage)
+        if not self.flag_active :
+            self.counter_active -= 1
+            self.check_flag_active()
+
+
+    def recovery(self):# добавить макс значение стамины , на данный момент , поменять стамину на хэлс
+        stamina_rec = self._health + (Dima.health * 0.1)
+        if stamina_rec > Dima.health:
+            self._health = Dima.health
         else:
-            self.stamina = stamina_rec
-            return self.stamina
+            self._health = stamina_rec
+        if not self.flag_active :
+            self.counter_active -= 1
+            self.check_flag_active()
 
-    def beast_mode(self,character):
-        character.stamina = character.stamina - (self.damage * 2)
-        return f"Нанесен урон способностью BEAST MODE по {character.name} , - {self.damage * 2} "
+    def activate_ability(self,character): # блокировка
+        self.__k_damage = 3
+        self.attack(character)
+        self.__k_damage = 1
+        self.flag_active = False
+        self.counter_active = 3
+
+    def check_flag_active(self):
+        if self.counter_active == 0 :
+            self.flag_active = True
+
+    @property
+    def name(self):
+        return self._name
+    @property
+    def damage(self):
+        return self._damage
+    @property
+    def stamina(self):
+        return self._health
+    @property
+    def active(self):
+        return self.counter_active
