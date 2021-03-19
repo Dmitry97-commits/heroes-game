@@ -3,33 +3,16 @@ import random
 
 class Dima(Character):
 
-    def __init__(self, _armor, _damage, _active, _name, _health):
+    def __init__(self,_damage, _name, _health):
         super().__init__(_name, _damage, _health)
         self.__k_damage = 1 #кэф атаки
-        self._armor = _armor
-        self.counter_active = 1
-        self.flag_active = False
-        max_health = self._health
 
 
     def __str__(self):
         return f"{self._name},{self._damage},{self._health},{self.counter_active}"
 
-    def taking_damage(self,damage):
-        if self._armor == 0:
-            self._health -= damage
-        elif self._armor > 0:
-            self._armor -= damage
-            if self._armor < 0:
-                self._health = self._armor + self._health # если после получения урона броню , она стала минусовой то урон прибавляется к стамине
-                self._armor = 0
-            else:
-                self._health -= damage
-        else:
-            self._health -= damage
 
-
-    def attack(self,character):#переписать
+    def attack(self,character):
         self._damage = (self._damage + (self._damage * random.uniform(-0.05, 0.3))) * self.__k_damage
         character.taking_damage(self._damage)
         if not self.flag_active :
@@ -74,11 +57,11 @@ def stamina(self):
     return self._health
 @property
 def active(self):
-    return self.counter_active
+    return self._counter_active
 
 
-h1 = Dima(0,2,1,"da",300)
-print(h1.health)
-h1.taking_damage(100)
-print(h1.health)
+# h1 = Dima(0,2,1,"da",300)
+# print(h1.health)
+# h1.taking_damage(100)
+# print(h1.health)
 
