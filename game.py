@@ -17,45 +17,61 @@ class Game:
 
     def game(self): #какая команда должна ходить ,1)  2)проверка .step t1 , t2 flag t not flag t 3) у каждого из перс поле умер или нет.
         # ф-ия  после каждого тэкинг дамаг - ок .не ок
+
+        self.pick_character_in_team()     # начало игры
+
+
         while self.__flag_team:
-            self.pick_character_in_team()
             print("Команда номер 1 делает первый ход !")
             self.step(self.__team1,self.__team2)
             self.death_kick(self.__team1)
+            if self.dead_team(self.__team1): # завершение игры в случае смерти всех членов команды
+                print("Команда 1 проиграла")
+                self.__flag_team = False       # право начать след. игру команде победителя
+                break                       # ?
+
 
             print("Команда номер 2 делает первый ход !")
             self.step(self.__team2,self.__team1)
             self.death_kick(self.__team2)
+            if self.dead_team(self.__team2):
+                print("Команда 2 проиграла")
+                self.__flag_team = True
+                break
+
+
+            self.__flag_team = False
+
+
         while not self.__flag_team:
-            self.pick_character_in_team()
             print("Команда номер 2 делает первый ход !")
             self.step(self.__team2,self.__team1)
             self.death_kick(self.__team2)
+            if self.dead_team(self.__team2):
+                print("Команда 2 проиграла")
+                self.__flag_team = True
+                break
 
             print("Команда номер 1 делает первый ход !")
             self.step(self.__team1,self.__team2)
             self.death_kick(self.__team1)
+            if self.dead_team(self.__team1):
+                print("Команда 1 проиграла")
+                self.__flag_team = False
+                break
+
+            self.__flag_team = True
 
 
-
-    def death_kick(self,team):
+    def death_kick(self,team):      #кик за смерть
         for i in team:
             if i.check_of_death():
                 team.remove(i)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def dead_team(self,team):    #проверка на наличие игроков в команде
+        if len(team) == 0 :
+            return True
 
 
     def pick_character_in_team(self):  # добавить инфо
