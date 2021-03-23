@@ -27,6 +27,7 @@ class Game:
                 self.step(self.__team1,self.__team2)
                 self.death_kick(self.__team1)
                 self.__team1.__str__()
+                self.info(self.__team1)
 
                 counter_of_round +=1
 
@@ -36,12 +37,17 @@ class Game:
                 self.step(self.__team2,self.__team1)
                 self.death_kick(self.__team2)
                 self.__team2.__str__()
+                self.info(self.__team2)
 
                 counter_of_round +=1
 
 
 
         self.__flag_team = not self.__flag_team
+
+    def info(self,team):
+        for i in team:
+            print(i)
 
 
 
